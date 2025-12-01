@@ -1,10 +1,12 @@
 #include "network/Server.h"
 
 #include <atomic>
+#include <cerrno>
 #include <chrono>
 #include <csignal>
 #include <iostream>
 #include <thread>
+#include <unistd.h>
 
 namespace {
 std::atomic<bool> g_running{true};
@@ -54,8 +56,20 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  std::cout << "server is ready to accept connections" << std::endl;
+
   while (g_running && server.isRunning()) {
-    // TODO: accept and handle client connections
+    // accept client connections
+    int clientFd = server.accept();
+    if (clientFd >= 0) {
+      // TODO: handle client connection (store in session manager, etc.)
+      close(clientFd);
+    } else if (errno != EAGAIN && errno != EWOULDBLOCK) {
+      // real error occurred
+      std::cerr << "error accepting connection" << std::endl;
+      break;
+    }
+
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 

@@ -2,6 +2,7 @@
 #define TETORIO_NETWORK_SERVER_H
 
 #include <cstdint>
+#include <netinet/in.h>
 
 namespace network {
 
@@ -70,6 +71,13 @@ public:
    * @return server port number
    */
   uint16_t getPort() const { return config_.port; }
+
+  /**
+   * accept client connection
+   * @param clientAddr client address (can be nullptr)
+   * @return client socket file descriptor, -1 if no connection or error
+   */
+  int accept(struct sockaddr_in *clientAddr = nullptr);
 
 private:
   /**

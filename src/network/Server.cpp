@@ -144,4 +144,44 @@ bool Server::setSocketOptions(int fd) {
   return true;
 }
 
+int Server::accept(struct sockaddr_in *clientAddr) {
+  if (!state_.running || state_.serverFd < 0) {
+    return -1;
+  }
+
+  struct sockaddr_in addr;
+  socklen_t addrLen = sizeof(addr);
+  struct sockaddr_in *addrPtr = clientAddr ? clientAddr : &addr;
+
+  // accept client connection
+  int clientFd = ::accept(
+      state_.serverFd, reinterpret_cast<struct sockaddr *>(addrPtr), &addrLen);
+
+  if (clientFd < 0) {
+    // no connection available, which is normal in non-blocking mode
+    if (errno == EAGAIN || errno == EWOULDBLOCK) {
+      return -1;
+    }
+    // real error occurred
+    std::cerr << "failed to accept client connection: " << strerror(errno)
+              << std::endl;
+    return -1;
+  }
+
+  // set client socket to non-blocking mode
+  if (!setNonBlocking(clientFd)) {
+    close(clientFd);
+    return -1;
+  }
+
+  // log client connection
+  char clientIp[INET_ADDRSTRLEN];
+  inet_ntop(AF_INET, &addrPtr->sin_addr, clientIp, INET_ADDRSTRLEN);
+  uint16_t clientPort = ntohs(addrPtr->sin_port);
+  std::cout << "client connected: " << clientIp << ":" << clientPort
+            << " (fd: " << clientFd << ")" << std::endl;
+
+  return clientFd;
+}
+
 } // namespace network
