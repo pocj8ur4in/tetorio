@@ -26,6 +26,7 @@ set(SOURCES
 # header files
 set(HEADERS
     include/network/Server.h
+    include/network/ClientBuffer.h
 )
 
 # executable file
