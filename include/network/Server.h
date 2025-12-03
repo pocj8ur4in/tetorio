@@ -4,9 +4,11 @@
 #include "ClientBuffer.h"
 
 #include <cstdint>
+#include <functional>
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <unordered_map>
+#include <vector>
 
 namespace network {
 
@@ -33,6 +35,12 @@ struct ServerState {
  */
 class Server {
 public:
+  // callback types for server events
+  using ClientConnectCallback = std::function<void(int clientFd)>;
+  using ClientDisconnectCallback = std::function<void(int clientFd)>;
+  using ClientDataCallback =
+      std::function<void(int clientFd, const uint8_t *data, size_t len)>;
+
   /**
    * constructor
    * @param port server port number
@@ -105,6 +113,36 @@ public:
    * @param len length of data to send
    */
   void broadcast(const uint8_t *data, size_t len);
+
+  /**
+   * get all connected client file descriptors
+   * @return vector of client file descriptors
+   */
+  std::vector<int> getClientFds() const;
+
+  /**
+   * set client connect callback
+   * @param callback callback function
+   */
+  void setClientConnectCallback(ClientConnectCallback callback) {
+    clientConnectCallback_ = std::move(callback);
+  }
+
+  /**
+   * set client disconnect callback
+   * @param callback callback function
+   */
+  void setClientDisconnectCallback(ClientDisconnectCallback callback) {
+    clientDisconnectCallback_ = std::move(callback);
+  }
+
+  /**
+   * set client data callback
+   * @param callback callback function
+   */
+  void setClientDataCallback(ClientDataCallback callback) {
+    clientDataCallback_ = std::move(callback);
+  }
 
 private:
   /**
@@ -199,6 +237,11 @@ private:
   ServerConfig config_;                           // server configuration
   ServerState state_;                             // server runtime state
   std::unordered_map<int, ClientBuffer> clients_; // client fd -> send buffer
+
+  // callbacks for server events
+  ClientConnectCallback clientConnectCallback_;
+  ClientDisconnectCallback clientDisconnectCallback_;
+  ClientDataCallback clientDataCallback_;
 };
 
 } // namespace network

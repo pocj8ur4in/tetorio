@@ -354,6 +354,11 @@ void Server::handleAccept() {
     std::cout << "client connected: " << clientIp << ":" << clientPort
               << " (fd: " << clientFd << ", total: " << clients_.size() << ")"
               << std::endl;
+
+    // call connect callback
+    if (clientConnectCallback_) {
+      clientConnectCallback_(clientFd);
+    }
   }
 }
 
@@ -385,7 +390,10 @@ void Server::handleRead(int clientFd) {
       return;
     }
 
-    // TODO: process received data (parse protocol, etc.)
+    // call data callback
+    if (clientDataCallback_) {
+      clientDataCallback_(clientFd, buffer, static_cast<size_t>(n));
+    }
   }
 }
 
@@ -432,6 +440,11 @@ void Server::handleWrite(int clientFd) {
 }
 
 void Server::closeClient(int clientFd) {
+  // call disconnect callback before removing
+  if (clientDisconnectCallback_) {
+    clientDisconnectCallback_(clientFd);
+  }
+
   removeClient(clientFd);
   close(clientFd);
   std::cout << "client " << clientFd
@@ -456,6 +469,15 @@ void Server::broadcast(const uint8_t *data, size_t len) {
     buffer.append(data, len);
     enableWriteEvent(clientFd);
   }
+}
+
+std::vector<int> Server::getClientFds() const {
+  std::vector<int> fds;
+  fds.reserve(clients_.size());
+  for (const auto &[fd, buffer] : clients_) {
+    fds.push_back(fd);
+  }
+  return fds;
 }
 
 void Server::runEventLoop() {
