@@ -20,6 +20,7 @@ endif()
 # source files
 set(SOURCES
     src/main.cpp
+    src/Tetorio.cpp
     src/network/Server.cpp
     src/session/SessionManager.cpp
     src/room/RoomManager.cpp
@@ -27,6 +28,7 @@ set(SOURCES
 
 # header files
 set(HEADERS
+    include/Tetorio.h
     include/network/Server.h
     include/network/ClientBuffer.h
     include/session/Session.h

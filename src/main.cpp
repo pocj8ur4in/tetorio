@@ -1,16 +1,12 @@
-#include "network/Server.h"
+#include "Tetorio.h"
 
 #include <atomic>
-#include <cerrno>
-#include <chrono>
 #include <csignal>
 #include <iostream>
-#include <thread>
-#include <unistd.h>
 
 namespace {
 std::atomic<bool> g_running{true};
-network::Server *g_server = nullptr;
+tetorio::Tetorio *g_server = nullptr;
 
 void signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGTERM) {
@@ -47,18 +43,21 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, signalHandler);
   signal(SIGTERM, signalHandler);
 
-  // create and start server
-  network::Server server(port);
+  // create and start tetorio server
+  tetorio::Tetorio server(port);
   g_server = &server;
 
   if (!server.start()) {
-    std::cerr << "failed to start server" << std::endl;
+    std::cerr << "failed to start tetorio" << std::endl;
     return 1;
   }
 
-  std::cout << "server is ready to accept connections" << std::endl;
+  std::cout << "tetorio is ready to accept connections" << std::endl;
+  std::cout << "  - session timeout: 30 seconds" << std::endl;
+  std::cout << "  - max rooms: 100" << std::endl;
 
-  server.runEventLoop();
+  // run event loop
+  server.run();
 
   return 0;
 }
