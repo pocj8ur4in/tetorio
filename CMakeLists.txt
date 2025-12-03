@@ -21,12 +21,15 @@ endif()
 set(SOURCES
     src/main.cpp
     src/network/Server.cpp
+    src/session/SessionManager.cpp
 )
 
 # header files
 set(HEADERS
     include/network/Server.h
     include/network/ClientBuffer.h
+    include/session/Session.h
+    include/session/SessionManager.h
 )
 
 # executable file
