@@ -22,6 +22,7 @@ set(SOURCES
     src/main.cpp
     src/network/Server.cpp
     src/session/SessionManager.cpp
+    src/room/RoomManager.cpp
 )
 
 # header files
@@ -30,6 +31,8 @@ set(HEADERS
     include/network/ClientBuffer.h
     include/session/Session.h
     include/session/SessionManager.h
+    include/room/Room.h
+    include/room/RoomManager.h
 )
 
 # executable file
