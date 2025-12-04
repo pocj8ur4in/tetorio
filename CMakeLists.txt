@@ -26,6 +26,7 @@ set(SOURCES
     src/room/RoomManager.cpp
     src/game/Board.cpp
     src/game/Bag.cpp
+    src/game/Piece.cpp
 )
 
 # header files
@@ -39,6 +40,7 @@ set(HEADERS
     include/room/RoomManager.h
     include/game/Board.h
     include/game/Bag.h
+    include/game/Piece.h
 )
 
 # executable file

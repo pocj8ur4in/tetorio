@@ -11,16 +11,31 @@ constexpr int BOARD_WIDTH = 10;
 constexpr int BOARD_HEIGHT = 20;
 constexpr int BOARD_BUFFER = 4;
 
-// cell values
-constexpr uint8_t CELL_EMPTY = 0;
-constexpr uint8_t CELL_I = 1;
-constexpr uint8_t CELL_O = 2;
-constexpr uint8_t CELL_T = 3;
-constexpr uint8_t CELL_S = 4;
-constexpr uint8_t CELL_Z = 5;
-constexpr uint8_t CELL_J = 6;
-constexpr uint8_t CELL_L = 7;
-constexpr uint8_t CELL_GARBAGE = 8;
+/**
+ * CellType matches cell values.
+ */
+enum class CellType : uint8_t {
+  EMPTY = 0,
+  I = 1,
+  O = 2,
+  T = 3,
+  S = 4,
+  Z = 5,
+  J = 6,
+  L = 7,
+  GARBAGE = 8
+};
+
+// Backward compatibility constants
+constexpr uint8_t CELL_EMPTY = static_cast<uint8_t>(CellType::EMPTY);
+constexpr uint8_t CELL_I = static_cast<uint8_t>(CellType::I);
+constexpr uint8_t CELL_O = static_cast<uint8_t>(CellType::O);
+constexpr uint8_t CELL_T = static_cast<uint8_t>(CellType::T);
+constexpr uint8_t CELL_S = static_cast<uint8_t>(CellType::S);
+constexpr uint8_t CELL_Z = static_cast<uint8_t>(CellType::Z);
+constexpr uint8_t CELL_J = static_cast<uint8_t>(CellType::J);
+constexpr uint8_t CELL_L = static_cast<uint8_t>(CellType::L);
+constexpr uint8_t CELL_GARBAGE = static_cast<uint8_t>(CellType::GARBAGE);
 
 /**
  * Board represents board for game.
